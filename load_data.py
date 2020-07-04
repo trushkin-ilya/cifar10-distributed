@@ -4,7 +4,7 @@ from __future__ import print_function
 
 import os
 
-import keras
+import tensorflow_core.python as tf
 import numpy as np
 
 
@@ -21,15 +21,15 @@ def load_data(data_dir: str):
     for i in range(1, 6):
         fpath = os.path.join(data_dir, 'data_batch_' + str(i))
         (x_train[(i - 1) * 10000:i * 10000, :, :, :],
-         y_train[(i - 1) * 10000:i * 10000]) = keras.datasets.cifar.load_batch(fpath)
+         y_train[(i - 1) * 10000:i * 10000]) = tf.keras.datasets.cifar.load_batch(fpath)
 
     fpath = os.path.join(data_dir, 'test_batch')
-    x_test, y_test = keras.datasets.cifar.load_batch(fpath)
+    x_test, y_test = tf.keras.datasets.cifar.load_batch(fpath)
 
     y_train = np.reshape(y_train, (len(y_train), 1))
     y_test = np.reshape(y_test, (len(y_test), 1))
 
-    if keras.backend.image_data_format() == 'channels_last':
+    if tf.keras.backend.image_data_format() == 'channels_last':
         x_train = x_train.transpose(0, 2, 3, 1)
         x_test = x_test.transpose(0, 2, 3, 1)
 
