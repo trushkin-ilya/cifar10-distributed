@@ -41,7 +41,7 @@ RUN mkdir /tmp/openmpi && \
     ldconfig && \
     rm -rf /tmp/openmpi
 
-RUN git clone https://github.com/trushkin-ilya/cifar10-distributed.git
+RUN git clone https://github.com/trushkin-ilya/cifar10-distributed.git -b develop
 WORKDIR "/cifar10-distributed"
 RUN HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITHOUT_PYTORCH=1 HOROVOD_WITHOUT_MXNET=1 \
     pip install -r requirements.txt
