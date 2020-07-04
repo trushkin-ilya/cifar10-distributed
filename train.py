@@ -39,10 +39,9 @@ if __name__ == "__main__":
         .batch(args.batch_size, drop_remainder=True)
 
     test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))\
-        .shard(hvd.size(), hvd.rank())\
         .batch(args.batch_size)
 
-    optimizer = hvd.DistributedOptimizer(tf.keras.optimizers.SGD(lr=args.lr * num_workers))
+    optimizer = hvd.DistributedOptimizer(tf.keras.optimizers.SGD(lr=args.lr * num_workers, momentum=0.5))
     model.compile(optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.fit(train_dataset, epochs=10, validation_data=test_dataset if master_node else None,
+    model.fit(train_dataset, epochs=10, validation_data=test_dataset,
               callbacks=callbacks, verbose=1 if master_node else 0)
