@@ -50,7 +50,9 @@ def main(_):
     train_op = optimizer.minimize(loss, global_step=global_step)
 
     (x_train, y_train), (x_test, y_test) = load_data(args.data_dir)
-    x_train = x_train[hvd.rank()::hvd.size()]
+    x_train, y_train = x_train[hvd.rank()::hvd.size()], y_train[hvd.rank()::hvd.size()]
+    order = np.random.permutation(len(x_train))
+    x_train, y_train = x_train[order], y_train[order]
     x_train = np.random.permutation(x_train)
     x_train = np.reshape(x_train, (-1, 1024, 3)) / 255.0
     x_test = np.reshape(x_test, (-1, 1024, 3)) / 255.0
