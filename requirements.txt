@@ -1,5 +1,5 @@
 tensorflow==1.15.2
 horovod==0.19.5
 future==0.18.2
-Keras==2.4.3
+Keras==2.3.1
 typing==3.7.4.1
