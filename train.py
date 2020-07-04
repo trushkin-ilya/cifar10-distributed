@@ -30,8 +30,12 @@ if __name__ == "__main__":
         callbacks.append(tf.keras.callbacks.TensorBoard(args.log_dir + '/' + datetime.now().strftime("%Y%m%d-%H%M%S")))
 
     (x_train, y_train), (x_test, y_test) = load_data(args.data_dir)
-    train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).repeat().shuffle(len(x_train)).batch(
-        args.batch_size, drop_remainder=True)
+    train_dataset = tf.data.Dataset\
+        .from_tensor_slices((x_train, y_train))\
+        .repeat()\
+        .shuffle(len(x_train))\
+        .shard(hvd.size(), hvd.rank())\
+        .batch(args.batch_size, drop_remainder=True)
     test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(args.batch_size)
     optimizer = hvd.DistributedOptimizer(tf.keras.optimizers.SGD(lr=args.lr * num_workers))
     model.compile(optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
