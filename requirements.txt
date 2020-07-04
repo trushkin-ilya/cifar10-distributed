@@ -1,0 +1,2 @@
+tensorflow==1.15.2
+horovod==0.19.5
