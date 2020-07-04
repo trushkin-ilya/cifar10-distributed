@@ -29,13 +29,6 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
     rm get-pip.py
 
-# Install TensorFlow and Keras
-RUN pip install future typing
-RUN pip install numpy \
-        tensorflow==${TENSORFLOW_VERSION} \
-        keras \
-        h5py
-
 # Install Open MPI
 RUN mkdir /tmp/openmpi && \
     cd /tmp/openmpi && \
@@ -62,10 +55,10 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
 RUN git clone https://github.com/trushkin-ilya/cifar10-distributed.git
-
+RUN pip install -r requirements.txt
 WORKDIR "/cifar10-distributed"
 RUN mkdir data
-RUN wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
-RUN tar xzvf cifar-10-python.tar.gz -C data
-RUN rm cifar-10-python.tar.gz
+RUN wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz && \
+    tar xzvf cifar-10-python.tar.gz -C data && \
+    rm cifar-10-python.tar.gz
 RUN mkdir checkpoints
