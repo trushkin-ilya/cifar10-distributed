@@ -41,9 +41,10 @@ RUN mkdir /tmp/openmpi && \
     ldconfig && \
     rm -rf /tmp/openmpi
 
-# Install Horovod
+RUN git clone https://github.com/trushkin-ilya/cifar10-distributed.git
+WORKDIR "/cifar10-distributed"
 RUN HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITHOUT_PYTORCH=1 HOROVOD_WITHOUT_MXNET=1 \
-    pip install --no-cache-dir horovod
+    pip install -r requirements.txt
 
 # Install OpenSSH for MPI to communicate between containers
 RUN apt-get install -y --no-install-recommends openssh-client openssh-server && \
@@ -54,9 +55,7 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
-RUN git clone https://github.com/trushkin-ilya/cifar10-distributed.git
-RUN pip install -r requirements.txt
-WORKDIR "/cifar10-distributed"
+
 RUN mkdir data
 RUN wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz && \
     tar xzvf cifar-10-python.tar.gz -C data && \
