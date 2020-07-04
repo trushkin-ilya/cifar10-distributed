@@ -1,4 +1,4 @@
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 ENV TENSORFLOW_VERSION=1.15.2
 
@@ -12,7 +12,7 @@ SHELL ["/bin/bash", "-cu"]
 RUN apt-get update && apt-get install -y --allow-downgrades --allow-change-held-packages --no-install-recommends \
         build-essential \
         cmake \
-        g++-4.9 \
+        g++-7 \
         git \
         curl \
         vim \
@@ -61,4 +61,6 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
-WORKDIR "/examples"
+RUN git clone https://github.com/trushkin-ilya/cifar10-distributed.git
+
+WORKDIR "/cifar10-distributed"
