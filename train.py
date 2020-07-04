@@ -5,10 +5,12 @@ import numpy as np
 import tensorflow as tf
 from load_data import load_data
 from models import conv_model
+
 tf.logging.set_verbosity(tf.logging.INFO)
 
 argparser = ArgumentParser()
 argparser.add_argument("--save-dir", type=str, default='checkpoints')
+argparser.add_argument("--epochs", type=str, default=10)
 argparser.add_argument("--data-dir", type=str, default='data/cifar-10-batches-py')
 argparser.add_argument("--log-dir", type=str, default='logs')
 argparser.add_argument("--batch-size", type=int, default=1)
@@ -39,8 +41,6 @@ def main(_):
         config.gpu_options.allow_growth = True
         config.gpu_options.visible_device_list = str(hvd.local_rank())
 
-
-
     with tf.name_scope('input'):
         image = tf.placeholder(tf.float32, [None, 1024, 3], name='image')
         label = tf.placeholder(tf.float32, [None], name='label')
@@ -58,8 +58,9 @@ def main(_):
     x_test = np.reshape(x_test, (-1, 1024, 3)) / 255.0
     training_batch_generator = train_input_generator(x_train, y_train, args.batch_size)
 
-    hooks = [hvd.BroadcastGlobalVariablesHook(0), tf.train.StopAtStepHook(last_step=len(x_train) // hvd.size()),
-             tf.train.LoggingTensorHook(tensors={'step': global_step, 'loss': loss}, every_n_iter=10)]
+    hooks = [hvd.BroadcastGlobalVariablesHook(0),
+             tf.train.StopAtStepHook(last_step=args.epochs * len(x_train) // args.batch_size),
+             tf.train.LoggingTensorHook(tensors={'step': global_step, 'loss': loss}, every_n_iter=100)]
 
     ckpt_dir = args.save_dir if master_node else None
 
@@ -67,6 +68,7 @@ def main(_):
         while not mon_sess.should_stop():
             image_, label_ = next(training_batch_generator)
             mon_sess.run(train_op, feed_dict={image: image_, label: np.squeeze(label_)})
+
 
 if __name__ == "__main__":
     tf.app.run()
