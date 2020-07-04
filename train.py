@@ -4,12 +4,14 @@ from datetime import datetime
 import horovod.tensorflow as hvd
 import horovod.tensorflow.keras as hvd_K
 import tensorflow as tf
+from load_data import load_data
 
 from models import CNN
 
 if __name__ == "__main__":
     argparser = ArgumentParser()
     argparser.add_argument("--save-dir", type=str, default='checkpoints')
+    argparser.add_argument("--data-dir", type=str, default='data/cifar-10-batches-py')
     argparser.add_argument("--log-dir", type=str, default='logs')
     argparser.add_argument("--batch-size", type=int, default=1)
     argparser.add_argument("--lr", type=float, default=3e-3)
@@ -27,7 +29,7 @@ if __name__ == "__main__":
             tf.keras.callbacks.ModelCheckpoint(args.save_dir + '/' + model.__class__.__name__ + '[{epoch}].h5'))
         callbacks.append(tf.keras.callbacks.TensorBoard(args.log_dir + '/' + datetime.now().strftime("%Y%m%d-%H%M%S")))
 
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+    (x_train, y_train), (x_test, y_test) = load_data(args.data_dir)
     train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train)).repeat().shuffle(len(x_train)).batch(
         args.batch_size, drop_remainder=True)
     test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test)).batch(args.batch_size)

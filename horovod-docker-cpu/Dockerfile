@@ -64,3 +64,8 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
 RUN git clone https://github.com/trushkin-ilya/cifar10-distributed.git
 
 WORKDIR "/cifar10-distributed"
+RUN mkdir data
+RUN wget https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz
+RUN tar xzvf cifar-10-python.tar.gz -C data
+RUN rm cifar-10-python.tar.gz
+RUN mkdir checkpoints
