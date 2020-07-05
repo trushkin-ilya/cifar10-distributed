@@ -3,7 +3,8 @@ import tensorflow as tf
 
 
 def cnn_model_fn(features, labels, mode):
-    conv1 = tf.layers.conv2d(inputs=features['x'], filters=32, kernel_size=[5, 5], padding="same", activation=tf.nn.relu)
+    conv1 = tf.layers.conv2d(inputs=features['x'], filters=32, kernel_size=[5, 5], padding="same",
+                             activation=tf.nn.relu)
     pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
     conv2 = tf.layers.conv2d(inputs=pool1, filters=64, kernel_size=[5, 5], padding="same", activation=tf.nn.relu)
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
@@ -23,7 +24,8 @@ def cnn_model_fn(features, labels, mode):
     loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=logits)
 
     if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.MomentumOptimizer(learning_rate=0.001 * hvd.size(), momentum=0.9)
+        from train import args
+        optimizer = tf.train.MomentumOptimizer(learning_rate=args.lr * hvd.size(), momentum=0.9)
         optimizer = hvd.DistributedOptimizer(optimizer)
         train_op = optimizer.minimize(loss=loss, global_step=tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
