@@ -62,4 +62,4 @@ docker run -it horovod:latest
 ```
 horovodrun -np 3 python train.py
 ```
-[View TensorBoard](https://tensorboard.dev/experiment/QrkEGMdKQl6p2eEdM918ug)
+[View TensorBoard](https://tensorboard.dev/experiment/M8pRQI50R6iZ5G9RzHn7IQ)
