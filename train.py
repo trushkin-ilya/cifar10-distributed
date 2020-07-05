@@ -9,7 +9,6 @@ import tensorflow as tf
 from load_data import load_data
 from models import cnn_model_fn
 
-tf.logging.set_verbosity(tf.logging.INFO)
 
 argparser = ArgumentParser()
 argparser.add_argument("--save-dir", type=str, default='checkpoints')
@@ -44,16 +43,18 @@ def main(_):
     estimator = tf.estimator.Estimator(model_fn=cnn_model_fn, model_dir=model_dir,
                                        config=tf.estimator.RunConfig(session_config=config))
 
-    for _ in range(args.epochs):
-        train_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_train}, y=np.squeeze(y_train),
-                                                      batch_size=args.batch_size,
-                                                      num_epochs=10, shuffle=True)
-        train_spec = tf.estimator.TrainSpec(input_fn=train_fn, max_steps=len(x_train) // args.batch_size, hooks=hooks)
+    train_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_train}, y=np.squeeze(y_train),
+                                                  batch_size=args.batch_size,
+                                                  num_epochs=args.epochs, shuffle=True)
 
+    if chief:
+        train_spec = tf.estimator.TrainSpec(input_fn=train_fn, max_steps=len(x_train) // args.batch_size, hooks=hooks)
         eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test}, y=np.squeeze(y_test), num_epochs=1, shuffle=False)
         eval_spec = tf.estimator.EvalSpec(input_fn=eval_fn)
-
         tf.estimator.train_and_evaluate(estimator, train_spec= train_spec, eval_spec=eval_spec)
+    else:
+        tf.logging.set_verbosity(tf.logging.ERROR)
+        estimator.train(train_fn, hooks=hooks)
 
 
 if __name__ == "__main__":
