@@ -44,18 +44,22 @@ def main(_):
     train_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_train}, y=np.squeeze(y_train),
                                                   batch_size=args.batch_size,
                                                   num_epochs=1, shuffle=True)
-    for _ in range(args.epochs):
-        if chief:
-            import concurrent.futures
+
+    if chief:
+        import concurrent.futures
+        eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test},
+                                                     y=np.squeeze(y_test),
+                                                     batch_size=1,
+                                                     num_epochs=1,
+                                                     shuffle=False)
+
+        for _ in range(args.epochs):
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as e:
                 e.submit(estimator.train, input_fn=train_fn, hooks=hooks)
-                eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test},
-                                                             y=np.squeeze(y_test),
-                                                             batch_size=1,
-                                                             num_epochs=1,
-                                                             shuffle=False)
                 e.submit(estimator.evaluate, input_fn=eval_fn)
-        else:
+        estimator.evaluate(input_fn=eval_fn)
+    else:
+        for _ in range(args.epochs):
             estimator.train(input_fn=train_fn, hooks=hooks)
 
 
