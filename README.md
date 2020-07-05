@@ -35,7 +35,7 @@ docker build -t horovod:latest horovod-docker-cpu
 #### Installation
 1. Set environment variables to skip installing redundant frameworks:
 ```
-HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITHOUT_PYTORCH=1 HOROVOD_WITHOUT_MXNET=1
+export HOROVOD_WITH_TENSORFLOW=1 HOROVOD_WITHOUT_PYTORCH=1 HOROVOD_WITHOUT_MXNET=1
 ```
 2. Install requirements:
 ```
