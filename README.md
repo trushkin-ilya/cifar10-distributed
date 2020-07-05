@@ -1,4 +1,4 @@
-# Distributed image classification
+# Distributed image classification ![](https://img.shields.io/badge/tensorflow-1.15-informational?logo=tensorflow&logoColor=ccc) ![](https://img.shields.io/badge/horovod-0.19-informational)
 
 Training distributed system for CIFAR-10 image classification using [TensorFlow](https://github.com/tensorflow/tensorflow) and [horovod](https://github.com/horovod/horovod). Data is divided into 3 parts. Each part is used by the corresponding worker. After each training epoch all workers evaluate loss on whole test dataset. Total loss is produced by averaging workers losses. Weight updates are produced by averaging workers local gradients. These updates apply to single neural network maintained by the master process. Then updated weights are copied to other workers' CNNs and new training epoch is started.
  
@@ -77,6 +77,7 @@ docker run -it horovod:latest
 nvidia-docker run -it horovod:latest
 ```
 **NOTE**: you can use `--privileged` parameter to avoid spam warnings in output.
+
 2. Run distributed training in 3 worker processes:
 ```
 horovodrun -np 3 python train.py
