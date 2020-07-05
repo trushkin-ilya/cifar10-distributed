@@ -60,7 +60,11 @@ tar xzvf cifar-10-python.tar.gz -C data
 rm cifar-10-python.tar.gz
 ```
 ## Running
-Run distributed training in 3 worker processes:
+1. (optional) Launch Tensorboard in `checkpoints` dir:
+```
+tensorboard --logdir checkpoints
+```
+2. Run distributed training in 3 worker processes:
 ```
 horovodrun -np 3 python train.py
 ```
@@ -70,9 +74,15 @@ horovodrun -np 3 python train.py
 ```
 docker run -it horovod:latest
 ```
-**NOTE**: you can use `--privileged` parameter to avoid spam warnings in output.
+ You can use `--privileged` parameter to avoid spam warnings in output.\
+ To forward default TensorBoard port 6006, use `-p 6006:6006`.
 
-2. Run distributed training in 3 worker processes:
+2. (optional) Launch Tensorboard in `checkpoints` dir:
+```
+tensorboard --logdir checkpoints
+```
+
+3. Run distributed training in 3 worker processes:
 ```
 horovodrun -np 3 python train.py
 ```
