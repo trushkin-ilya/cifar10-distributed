@@ -16,7 +16,7 @@ argparser.add_argument("--save-dir", type=str, default='checkpoints')
 argparser.add_argument("--epochs", type=str, default=10)
 argparser.add_argument("--data-dir", type=str, default='data/cifar-10-batches-py')
 argparser.add_argument("--batch-size", type=int, default=1)
-argparser.add_argument("--lr", type=float, default=3e-3)
+argparser.add_argument("--lr", type=float, default=3e-4)
 args = argparser.parse_args()
 
 
