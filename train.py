@@ -15,10 +15,8 @@ argparser = ArgumentParser()
 argparser.add_argument("--save-dir", type=str, default='checkpoints')
 argparser.add_argument("--epochs", type=str, default=10)
 argparser.add_argument("--data-dir", type=str, default='data/cifar-10-batches-py')
-argparser.add_argument("--log-dir", type=str, default='logs')
 argparser.add_argument("--batch-size", type=int, default=1)
 argparser.add_argument("--lr", type=float, default=3e-3)
-argparser.add_argument("--use-gpu", type=bool, default=False)
 args = argparser.parse_args()
 
 
@@ -28,9 +26,8 @@ def main(_):
     num_workers = hvd.size()
 
     config = tf.ConfigProto()
-    if args.use_gpu:
-        config.gpu_options.allow_growth = True
-        config.gpu_options.visible_device_list = str(hvd.local_rank())
+    config.gpu_options.allow_growth = True
+    config.gpu_options.visible_device_list = str(hvd.local_rank())
 
     (x_train, y_train), (x_test, y_test) = load_data(args.data_dir)
     x_train, y_train = x_train[hvd.rank()::num_workers], y_train[hvd.rank()::num_workers]
@@ -47,12 +44,19 @@ def main(_):
     train_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_train}, y=np.squeeze(y_train),
                                                   batch_size=args.batch_size,
                                                   num_epochs=1, shuffle=True)
-
     for _ in range(args.epochs):
-        estimator.train(input_fn=train_fn, hooks=hooks)
         if chief:
-            eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test}, y=np.squeeze(y_test), num_epochs=1, shuffle=False)
-            estimator.evaluate(input_fn=eval_fn)
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor(max_workers=2) as e:
+                e.submit(estimator.train, input_fn=train_fn, hooks=hooks)
+                eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test},
+                                                             y=np.squeeze(y_test),
+                                                             batch_size=1,
+                                                             num_epochs=1,
+                                                             shuffle=False)
+                e.submit(estimator.evaluate, input_fn=eval_fn)
+        else:
+            estimator.train(input_fn=train_fn, hooks=hooks)
 
 
 if __name__ == "__main__":
