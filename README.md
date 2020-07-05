@@ -66,7 +66,12 @@ tensorboard --logdir checkpoints
 ```
 2. Run distributed training in 3 worker processes:
 ```
-horovodrun -np 3 python train.py
+horovodrun -np 3 python train.py [--batch-size 1]
+                                 [--save-dir checkpoints]
+                                 [--epochs 10]
+                                 [--data-dir data/cifar-10-batches-py]
+                                 [--lr 3e-4]
+
 ```
 ### Docker
 
@@ -84,6 +89,11 @@ tensorboard --logdir checkpoints
 
 3. Run distributed training in 3 worker processes:
 ```
-horovodrun -np 3 python train.py
+horovodrun -np 3 python train.py [--batch-size 1]
+                                 [--save-dir checkpoints]
+                                 [--epochs 10]
+                                 [--data-dir data/cifar-10-batches-py]
+                                 [--lr 3e-4]
+
 ```
 [View TensorBoard](https://tensorboard.dev/experiment/M8pRQI50R6iZ5G9RzHn7IQ)
