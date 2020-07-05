@@ -53,7 +53,6 @@ def main(_):
         eval_spec = tf.estimator.EvalSpec(input_fn=eval_fn)
         tf.estimator.train_and_evaluate(estimator, train_spec= train_spec, eval_spec=eval_spec)
     else:
-        tf.logging.set_verbosity(tf.logging.ERROR)
         estimator.train(train_fn, hooks=hooks)
 
 
