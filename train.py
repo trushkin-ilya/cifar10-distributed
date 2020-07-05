@@ -46,12 +46,13 @@ def main(_):
 
     train_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_train}, y=np.squeeze(y_train),
                                                   batch_size=args.batch_size,
-                                                  num_epochs=args.epochs, shuffle=True)
+                                                  num_epochs=1, shuffle=True)
 
-    estimator.train(input_fn=train_fn, hooks=hooks)
-    if chief:
-        eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test}, y=np.squeeze(y_test), num_epochs=1, shuffle=False)
-        estimator.evaluate(input_fn=eval_fn)
+    for _ in range(args.epochs):
+        estimator.train(input_fn=train_fn, hooks=hooks)
+        if chief:
+            eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test}, y=np.squeeze(y_test), num_epochs=1, shuffle=False)
+            estimator.evaluate(input_fn=eval_fn)
 
 
 if __name__ == "__main__":
