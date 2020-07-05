@@ -1,7 +1,6 @@
 # Distributed image classification ![](https://img.shields.io/badge/tensorflow-1.15-informational?logo=tensorflow&logoColor=ccc) ![](https://img.shields.io/badge/horovod-0.19-informational)
 
-Training distributed system for CIFAR-10 image classification using [TensorFlow](https://github.com/tensorflow/tensorflow) and [horovod](https://github.com/horovod/horovod). Data is divided into parts equal to number of workers. Each worker is assigned separate data part. Total loss is produced by averaging workers losses during training. Weight updates are produced by averaging workers local gradients. These updates apply to single neural network maintained by the master process. Then updated weights are copied to other workers' CNNs and new training epoch is started.
-After each training epoch chief worker evaluates loss on whole test dataset in separate thread. 
+Training distributed system for CIFAR-10 image classification using [TensorFlow](https://github.com/tensorflow/tensorflow) and [horovod](https://github.com/horovod/horovod). Data is divided into parts equal to the number of workers. Each worker is assigned a separate data slice. The total loss is produced by averaging workers losses during training. Weight updates are produced by averaging workers, local gradients. These updates apply to single neural network maintained by the master process. Then updated weights are copied to other workers' CNNs and new training epoch is started. After each training epoch chief worker evaluates loss on the whole test dataset in a separate thread.
  
 * [Get started](#get-started)
      * [Docker image](#docker-image)
