@@ -2,11 +2,18 @@
 
 Training distributed system for CIFAR-10 image classification using [TensorFlow](https://github.com/tensorflow/tensorflow) and [horovod](https://github.com/horovod/horovod). Data is divided into 3 parts. Each part is used by the corresponding worker. After each training epoch all workers evaluate loss on whole test dataset. Total loss is produced by averaging workers losses. Weight updates are produced by averaging workers local gradients. These updates apply to single neural network maintained by the master process. Then updated weights are copied to other workers' CNNs and new training epoch is started.
  
+* [Get started](#get-started)
+     * [Docker image](#docker-image)
+        * [Prerequisites](#prerequisites)
+        * [Installation](#installation)
+     * [Manual setup](#manual-setup)
+        * [Prerequisites](#prerequisites-1)
+        * [Installation](#installation-1)
+* [Running](#running)
+    * [Docker](#docker)
 
 
 ## Get started 
-All you need to have is single-CPU machine. Code does not support GPU learning since it does not pin processes to GPU units.
-
 ### Docker image
 #### Prerequisites
  - [Docker](https://www.docker.com/get-started)
@@ -53,9 +60,21 @@ tar xzvf cifar-10-python.tar.gz -C data
 rm cifar-10-python.tar.gz
 ```
 ## Running
+Run distributed training in 3 worker processes:
+```
+horovodrun -np 3 python train.py
+```
+### Docker
+
 1. Run docker container:
+
+- For CPU:
 ```
 docker run -it horovod:latest
+```
+ - For GPU:
+ ```
+nvidia-docker run -it horovod:latest
 ```
 **NOTE**: you can use `--privileged` parameter to avoid spam warnings in output.
 2. Run distributed training in 3 worker processes:
