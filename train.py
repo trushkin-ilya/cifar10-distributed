@@ -6,9 +6,10 @@ import horovod.tensorflow as hvd
 import numpy as np
 import tensorflow as tf
 
+tf.get_logger().propagate = False
+
 from load_data import load_data
 from models import cnn_model_fn
-
 
 argparser = ArgumentParser()
 argparser.add_argument("--save-dir", type=str, default='checkpoints')
@@ -47,13 +48,10 @@ def main(_):
                                                   batch_size=args.batch_size,
                                                   num_epochs=args.epochs, shuffle=True)
 
+    estimator.train(input_fn=train_fn, hooks=hooks)
     if chief:
-        train_spec = tf.estimator.TrainSpec(input_fn=train_fn, max_steps=len(x_train) // args.batch_size, hooks=hooks)
         eval_fn = tf.estimator.inputs.numpy_input_fn(x={"x": x_test}, y=np.squeeze(y_test), num_epochs=1, shuffle=False)
-        eval_spec = tf.estimator.EvalSpec(input_fn=eval_fn)
-        tf.estimator.train_and_evaluate(estimator, train_spec= train_spec, eval_spec=eval_spec)
-    else:
-        estimator.train(train_fn, hooks=hooks)
+        estimator.evaluate(input_fn=eval_fn)
 
 
 if __name__ == "__main__":
