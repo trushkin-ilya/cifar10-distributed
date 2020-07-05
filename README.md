@@ -67,14 +67,8 @@ horovodrun -np 3 python train.py
 ### Docker
 
 1. Run docker container:
-
-- For CPU:
 ```
 docker run -it horovod:latest
-```
- - For GPU:
- ```
-nvidia-docker run -it horovod:latest
 ```
 **NOTE**: you can use `--privileged` parameter to avoid spam warnings in output.
 
