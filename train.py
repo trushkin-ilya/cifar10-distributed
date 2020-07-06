@@ -35,7 +35,7 @@ def main(_):
     x_test = x_test / 255.0
 
     hooks = [hvd.BroadcastGlobalVariablesHook(0)]
-
+    os.makedirs(args.save_dir, exist_ok=True)
     model_dir = os.path.join(args.save_dir, datetime.now().strftime("%Y%m%d-%H%M%S")) if chief else None
 
     estimator = tf.estimator.Estimator(model_fn=cnn_model_fn, model_dir=model_dir,
