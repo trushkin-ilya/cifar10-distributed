@@ -1,2 +1,2 @@
-tensorflow==1.15.2
+tensorflow==1.15.4
 horovod==0.19.5
